@@ -7,8 +7,8 @@ import {
   logoutApi,
   TLoginData,
   TRegisterData
-} from '@api';
-import { TUser } from '@utils-types';
+} from '../../utils/burger-api';
+import { TUser } from '../../utils/types';
 import { setCookie, getCookie } from '../../utils/cookie';
 
 export const loginUser = createAsyncThunk('user/login', loginUserApi);
