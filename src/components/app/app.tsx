@@ -11,19 +11,12 @@ import {
 } from '@pages';
 import '../../index.css';
 import styles from './app.module.css';
-
 import { AppHeader, IngredientDetails, Modal, OrderInfo } from '@components';
 import { Preloader } from '@ui';
-import {
-  Routes,
-  Route,
-  Navigate,
-  useLocation,
-  useNavigate
-} from 'react-router-dom';
-
+import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from '../../services/store';
 import { fetchIngredients } from '../../services/slices/ingredientsSlice';
+import { checkUserAuth } from '../../services/slices/userSlice';
 import { useEffect } from 'react';
 import { ProtectedRoute } from '../../components/protected-route';
 
@@ -47,6 +40,7 @@ const App = () => {
   const closeModal = () => navigate(-1);
 
   useEffect(() => {
+    dispatch(checkUserAuth());
     dispatch(fetchIngredients());
   }, [dispatch]);
 
@@ -55,22 +49,44 @@ const App = () => {
 
   return (
     <div>
-      {/* при исп. фрагмента (заместо <div>) вылезают removeСhild error */}
       <AppHeader />
       <Routes location={background || location}>
         <Route path='/' element={<ConstructorWrapper />} />
         <Route path='/feed' element={<Feed />} />
-        <Route path='/login' element={<Login />} />{' '}
-        <Route path='/register' element={<Register />} />{' '}
-        <Route path='/forgot-password' element={<ForgotPassword />} />{' '}
+        <Route path='/feed/:number' element={<OrderInfo />} />
+        <Route path='/ingredients/:id' element={<IngredientDetails />} />
+        <Route
+          path='/login'
+          element={
+            <ProtectedRoute onlyUnAuth>
+              <Login />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path='/register'
+          element={
+            <ProtectedRoute onlyUnAuth>
+              <Register />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path='/forgot-password'
+          element={
+            <ProtectedRoute onlyUnAuth>
+              <ForgotPassword />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path='/reset-password'
           element={
-            <ProtectedRoute>
+            <ProtectedRoute onlyUnAuth>
               <ResetPassword />
             </ProtectedRoute>
           }
-        />{' '}
+        />
         <Route
           path='/profile'
           element={
@@ -78,7 +94,7 @@ const App = () => {
               <Profile />
             </ProtectedRoute>
           }
-        />{' '}
+        />
         <Route
           path='/profile/orders'
           element={
@@ -86,12 +102,12 @@ const App = () => {
               <ProfileOrders />
             </ProtectedRoute>
           }
-        />{' '}
+        />
         <Route
-          path='/ingredients/:id'
+          path='/profile/orders/:number'
           element={
             <ProtectedRoute>
-              <IngredientDetails />
+              <OrderInfo />
             </ProtectedRoute>
           }
         />
@@ -102,7 +118,7 @@ const App = () => {
           <Route
             path='/feed/:number'
             element={
-              <Modal title='title' onClose={closeModal}>
+              <Modal title='Детали заказа' onClose={closeModal}>
                 <OrderInfo />
               </Modal>
             }
@@ -110,7 +126,7 @@ const App = () => {
           <Route
             path='/ingredients/:id'
             element={
-              <Modal title='title' onClose={closeModal}>
+              <Modal title='Детали ингредиента' onClose={closeModal}>
                 <IngredientDetails />
               </Modal>
             }
@@ -119,12 +135,12 @@ const App = () => {
             path='/profile/orders/:number'
             element={
               <ProtectedRoute>
-                <Modal title='title' onClose={closeModal}>
+                <Modal title='Детали заказа' onClose={closeModal}>
                   <OrderInfo />
                 </Modal>
               </ProtectedRoute>
             }
-          />{' '}
+          />
         </Routes>
       )}
     </div>

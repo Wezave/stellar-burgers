@@ -77,10 +77,12 @@ export const AppHeaderUI: FC = () => {
               }
             >
               {({ isActive }) => (
-                <>
+                <span className={styles.link_content}>
                   <ProfileIcon type={isActive ? 'primary' : 'secondary'} />
-                  <p className='text text_type_main-default ml-2'>Войти</p>
-                </>
+                  <p className='text text_type_main-default ml-2'>
+                    Личный кабиент
+                  </p>
+                </span>
               )}
             </NavLink>
           )}

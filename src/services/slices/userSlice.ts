@@ -17,24 +17,39 @@ export const getUser = createAsyncThunk('user/get', getUserApi);
 export const updateUser = createAsyncThunk('user/update', updateUserApi);
 export const logoutUser = createAsyncThunk('user/logout', logoutApi);
 
+export const checkUserAuth = createAsyncThunk(
+  'user/checkAuth',
+  async (_, { dispatch }) => {
+    if (getCookie('accessToken')) {
+      await dispatch(getUser()).unwrap();
+    }
+    dispatch(authChecked());
+  }
+);
+
 type TUserState = {
   user: TUser | null;
   isLoading: boolean;
   error: string | null;
   isAuthenticated: boolean;
+  isAuthChecked: boolean;
 };
 
 const initialState: TUserState = {
   user: null,
   isLoading: false,
   error: null,
-  isAuthenticated: false
+  isAuthenticated: false,
+  isAuthChecked: false
 };
 
 const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
+    authChecked: (state) => {
+      state.isAuthChecked = true;
+    },
     clearUser: (state) => {
       state.user = null;
       state.isAuthenticated = false;
@@ -50,6 +65,7 @@ const userSlice = createSlice({
         state.isLoading = false;
         state.user = action.payload.user;
         state.isAuthenticated = true;
+        state.isAuthChecked = true;
         localStorage.setItem('refreshToken', action.payload.refreshToken);
         setCookie('accessToken', action.payload.accessToken);
       })
@@ -65,6 +81,7 @@ const userSlice = createSlice({
         state.isLoading = false;
         state.user = action.payload.user;
         state.isAuthenticated = true;
+        state.isAuthChecked = true;
         localStorage.setItem('refreshToken', action.payload.refreshToken);
         setCookie('accessToken', action.payload.accessToken);
       })
@@ -80,10 +97,12 @@ const userSlice = createSlice({
         state.isLoading = false;
         state.user = action.payload.user;
         state.isAuthenticated = true;
+        state.isAuthChecked = true;
       })
       .addCase(getUser.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.error.message || 'Ошибка получения пользователя';
+        state.isAuthChecked = true;
       })
       .addCase(updateUser.pending, (state) => {
         state.isLoading = true;
@@ -105,6 +124,7 @@ const userSlice = createSlice({
         state.isLoading = false;
         state.user = null;
         state.isAuthenticated = false;
+        state.isAuthChecked = true;
         localStorage.removeItem('refreshToken');
         document.cookie = 'accessToken=; path=/; expires=-1';
       })
@@ -115,5 +135,5 @@ const userSlice = createSlice({
   }
 });
 
-export const { clearUser } = userSlice.actions;
+export const { authChecked, clearUser } = userSlice.actions;
 export default userSlice.reducer;
