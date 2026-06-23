@@ -6,10 +6,28 @@ import { useSelector } from '../../services/store';
 
 export const BurgerIngredients: FC = () => {
   const { ingredients } = useSelector((state) => state.ingredients);
+  const { bun, ingredients: constructorIngredients } = useSelector(
+    (state) => state.BurgerConstructor
+  );
 
-  const buns = ingredients.filter((item) => item.type === 'bun');
-  const mains = ingredients.filter((item) => item.type === 'main');
-  const sauces = ingredients.filter((item) => item.type === 'sauce');
+  const getCount = (itemId: string, type: string) => {
+    if (type === 'bun') {
+      return bun && bun._id === itemId ? 1 : 0;
+    }
+    return constructorIngredients.filter((item) => item._id === itemId).length;
+  };
+
+  const buns = ingredients
+    .filter((item) => item.type === 'bun')
+    .map((item) => ({ ...item, count: getCount(item._id, 'bun') }));
+
+  const mains = ingredients
+    .filter((item) => item.type === 'main')
+    .map((item) => ({ ...item, count: getCount(item._id, 'main') }));
+
+  const sauces = ingredients
+    .filter((item) => item.type === 'sauce')
+    .map((item) => ({ ...item, count: getCount(item._id, 'sauce') }));
 
   const [currentTab, setCurrentTab] = useState<TTabMode>('bun');
   const titleBunRef = useRef<HTMLHeadingElement>(null);

@@ -1,18 +1,19 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { orderBurgerApi } from '../../utils/burger-api';
 import { TIngredient, TOrder } from '../../utils/types';
+import { v4 as uuidv4 } from 'uuid';
 
 export const createOrder = createAsyncThunk(
   'burgerConstructor/createOrder',
   async (ingredients: string[]) => {
     const response = await orderBurgerApi(ingredients);
-    return response.order;
+    return response.order as unknown as TOrder;
   }
 );
 
 type TConstructorState = {
   bun: TIngredient | null;
-  ingredients: TIngredient[];
+  ingredients: (TIngredient & { id: string })[];
   order: TOrder | null;
   orderRequest: boolean;
   orderModalData: TOrder | null;
@@ -34,11 +35,23 @@ const burgerConstructorSlice = createSlice({
   name: 'burgerConstructor',
   initialState,
   reducers: {
-    addIngredient: (state, action: PayloadAction<TIngredient>) => {
-      if (action.payload.type === 'bun') {
-        state.bun = action.payload;
-      } else {
-        state.ingredients.push(action.payload);
+    addIngredient: {
+      reducer: (
+        state,
+        action: PayloadAction<TIngredient & { id?: string }>
+      ) => {
+        const ingredient = action.payload;
+        if (ingredient.type === 'bun') {
+          state.bun = ingredient;
+        } else {
+          state.ingredients.push(ingredient as TIngredient & { id: string });
+        }
+      },
+      prepare: (ingredient: TIngredient) => {
+        if (ingredient.type === 'bun') {
+          return { payload: ingredient };
+        }
+        return { payload: { ...ingredient, id: uuidv4() } };
       }
     },
     removeIngredient: (state, action: PayloadAction<number>) => {
@@ -71,8 +84,8 @@ const burgerConstructorSlice = createSlice({
       })
       .addCase(createOrder.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.order = action.payload as unknown as TOrder;
-        state.orderModalData = action.payload as unknown as TOrder;
+        state.order = action.payload;
+        state.orderModalData = action.payload;
         state.orderRequest = false;
         state.bun = null;
         state.ingredients = [];

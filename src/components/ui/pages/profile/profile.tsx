@@ -1,33 +1,36 @@
-import { FC } from 'react';
-import { Button, Input } from '@zlden/react-developer-burger-ui-components';
-import styles from './profile.module.css';
-import commonStyles from '../common.module.css';
-import { ProfileUIProps } from './type';
+import { FC, ReactNode } from 'react';
+import { Input, Button } from '@zlden/react-developer-burger-ui-components';
 import { ProfileMenu } from '@components';
+import commonStyles from '../common.module.css';
+import styles from './profile.module.css';
+import { ProfileUIProps } from './type';
 
-export const ProfileUI: FC<ProfileUIProps> = ({
+export const ProfileUI: FC<ProfileUIProps & { children?: ReactNode }> = ({
   formValue,
   isFormChanged,
   updateUserError,
   handleSubmit,
   handleCancel,
-  handleInputChange
+  handleInputChange,
+  children
 }) => (
   <main className={`${commonStyles.container}`}>
     <div className={`mt-30 mr-15 ${styles.menu}`}>
       <ProfileMenu />
     </div>
-    <form
-      className={`mt-30 ${styles.form} ${commonStyles.form}`}
-      onSubmit={handleSubmit}
-    >
-      <>
+    {children ? (
+      <div className={styles.content}>{children}</div>
+    ) : (
+      <form
+        className={`mt-30 ${styles.form} ${commonStyles.form}`}
+        onSubmit={handleSubmit || (() => {})}
+      >
         <div className='pb-6'>
           <Input
             type={'text'}
             placeholder={'Имя'}
-            onChange={handleInputChange}
-            value={formValue.name}
+            onChange={handleInputChange || (() => {})}
+            value={formValue?.name || ''}
             name={'name'}
             error={false}
             errorText={''}
@@ -39,8 +42,8 @@ export const ProfileUI: FC<ProfileUIProps> = ({
           <Input
             type={'email'}
             placeholder={'E-mail'}
-            onChange={handleInputChange}
-            value={formValue.email}
+            onChange={handleInputChange || (() => {})}
+            value={formValue?.email || ''}
             name={'email'}
             error={false}
             errorText={''}
@@ -52,8 +55,8 @@ export const ProfileUI: FC<ProfileUIProps> = ({
           <Input
             type={'password'}
             placeholder={'Пароль'}
-            onChange={handleInputChange}
-            value={formValue.password}
+            onChange={handleInputChange || (() => {})}
+            value={formValue?.password || ''}
             name={'password'}
             error={false}
             errorText={''}
@@ -67,7 +70,7 @@ export const ProfileUI: FC<ProfileUIProps> = ({
               type='secondary'
               htmlType='button'
               size='medium'
-              onClick={handleCancel}
+              onClick={handleCancel || (() => {})}
             >
               Отменить
             </Button>
@@ -83,7 +86,7 @@ export const ProfileUI: FC<ProfileUIProps> = ({
             {updateUserError}
           </p>
         )}
-      </>
-    </form>
+      </form>
+    )}
   </main>
 );

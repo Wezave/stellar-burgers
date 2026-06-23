@@ -25,6 +25,8 @@
 
 .columnOrders {
   width: 608px;
+  max-height: calc(100vh - 75px);
+  overflow-y: scroll;
 }
 
 .columnInfo {
