@@ -12,16 +12,16 @@ export const ResetPasswordUI: FC<ResetPasswordUIProps> = ({
   errorText,
   password,
   setPassword,
-  handleSubmit,
   token,
-  setToken
+  setToken,
+  handleSubmit
 }) => (
   <main className={styles.container}>
     <div className={`pt-6 ${styles.wrapCenter}`}>
       <h3 className='pb-6 text text_type_main-medium'>Восстановление пароля</h3>
       <form
         className={`pb-15 ${styles.form}`}
-        name='login'
+        name='reset-password'
         onSubmit={handleSubmit}
       >
         <div className='pb-6'>
@@ -56,7 +56,7 @@ export const ResetPasswordUI: FC<ResetPasswordUIProps> = ({
       </form>
       <div className={`${styles.question} text text_type_main-default pb-6`}>
         Вспомнили пароль?
-        <Link to='/login' className={`pl-2 ${styles.link}`}>
+        <Link to={'/login'} className={`pl-2 ${styles.link}`}>
           Войти
         </Link>
       </div>
