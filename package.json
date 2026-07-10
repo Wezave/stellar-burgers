@@ -95,7 +95,8 @@
     "lint:fix": "npm run lint -- --fix",
     "format": "prettier ./src --write",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "test-playwright": "npx playwright test"
   },
   "eslintConfig": {
     "extends": [
