@@ -21,7 +21,7 @@ type TConstructorState = {
   error: string | null;
 };
 
-const initialState: TConstructorState = {
+export const initialState: TConstructorState = {
   bun: null,
   ingredients: [],
   order: null,
